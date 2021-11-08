@@ -14,12 +14,10 @@ namespace Basket.API.Controllers
     [Route("api/[controller]")]
     public class BasketController : ControllerBase
     {
-        private readonly ILogger _logger;
         private readonly IBasketRepository _basketRepository;
 
-        public BasketController(ILogger logger, IBasketRepository repository)
+        public BasketController(IBasketRepository repository)
         {
-            this._logger = logger;
             this._basketRepository = repository;
         }
 
