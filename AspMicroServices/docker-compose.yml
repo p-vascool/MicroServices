@@ -2,13 +2,35 @@ version: '3.4'
 
 services:
   catalogdb:
-    image: mongo
+    container_name: catalogdb
+    restart: always
+    ports:
+      -  "27017:27017" 
+    volumes:
+      -  mongo_data:/data/db
+      
+  basketdb:
+    container_name: basketdb
+    restart: always 
+    ports:
+      -  "6379:6379" 
 
   catalog.api:
-    image: ${DOCKER_REGISTRY-}catalogapi
-    build:
-      context: .
-      dockerfile: src/Services/Catalog/Catalog.API/Dockerfile
+    container_name: catalog.api
+    environment:
+      -  APNETCORE_ENVIRONMENT=Development
+      -  "DatabaseSettings:ConnectionString=mongodb://localhost:27017"
+    depends_on:   
+      -  catalogdb
+    ports:
+      - "8000:80" 
 
-volumes:
-  mongo_data:
+  basket.api:
+    container_name: basket.api
+    environment:
+      -  APNETCORE_ENVIRONMENT=Development
+      -  "CacheSettings:ConnectionString=basketdb:6379"
+    depends_on:   
+      -  basketdb
+    ports:
+      - "8001:80" 
