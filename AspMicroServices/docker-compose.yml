@@ -2,35 +2,81 @@ version: '3.4'
 
 services:
   catalogdb:
-    container_name: catalogdb
-    restart: always
-    ports:
-      -  "27017:27017" 
-    volumes:
-      -  mongo_data:/data/db
-      
+    image: mongo
+
   basketdb:
-    container_name: basketdb
-    restart: always 
-    ports:
-      -  "6379:6379" 
+    image: redis:alpine
+
+  discountdb:
+    image: postgres
+
+  orderdb:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+
+  pgadmin:
+    image: dpage/pgadmin4
+
+  portainer:
+    image: portainer/portainer-ce
 
   catalog.api:
-    container_name: catalog.api
-    environment:
-      -  APNETCORE_ENVIRONMENT=Development
-      -  "DatabaseSettings:ConnectionString=mongodb://localhost:27017"
-    depends_on:   
-      -  catalogdb
-    ports:
-      - "8000:80" 
+    image: ${DOCKER_REGISTRY-}catalogapi
+    build:
+      context: .
+      dockerfile: Services/Catalog/Catalog.API/Dockerfile
 
   basket.api:
-    container_name: basket.api
-    environment:
-      -  APNETCORE_ENVIRONMENT=Development
-      -  "CacheSettings:ConnectionString=basketdb:6379"
-    depends_on:   
-      -  basketdb
-    ports:
-      - "8001:80" 
+    image: ${DOCKER_REGISTRY-}basketapi
+    build:
+      context: .
+      dockerfile: Services/Basket/Basket.API/Dockerfile
+
+  discount.api:
+    image: ${DOCKER_REGISTRY-}discountapi
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.API/Dockerfile
+
+  discount.grpc:
+    image: ${DOCKER_REGISTRY-}discountgrpc
+    build:
+      context: .
+      dockerfile: Services/Discount/Discount.Grpc/Dockerfile
+
+  ordering.api:
+    image: ${DOCKER_REGISTRY-}orderingapi
+    build:
+      context: .
+      dockerfile: Services/Ordering/Ordering.API/Dockerfile
+
+  ocelotapigw:
+    image: ${DOCKER_REGISTRY-}ocelotapigw
+    build:
+      context: .
+      dockerfile: ApiGateways/OcelotApiGw/Dockerfile
+
+  shopping.aggregator:
+    image: ${DOCKER_REGISTRY-}shoppingaggregator
+    build:
+      context: .
+      dockerfile: ApiGateways/Shopping.Aggregator/Dockerfile
+
+  aspnetrunbasics:
+    image: ${DOCKER_REGISTRY-}aspnetrunbasics
+    build:
+      context: .
+      dockerfile: WebApps/AspnetRunBasics/Dockerfile
+
+volumes:
+  mongo_data:
+  portainer_data:
+  postgres_data:
+  pgadmin_data:
+
+
+
+
+
