@@ -10,7 +10,7 @@ namespace Ordering.Infrastructure.Persistance
 {
     public class OrderContextSeed
     {
-        public static async Task Create(OrderContext orderContext, ILogger<OrderContextSeed> logger)
+        public static async Task SeedAsync(OrderContext orderContext, ILogger<OrderContextSeed> logger)
         {
             if (!orderContext.Orders.Any())
             {
