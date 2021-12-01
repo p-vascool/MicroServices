@@ -35,6 +35,7 @@ namespace Basket.API
             });
 
             services.AddScoped<IBasketRepository, BasketRepository>();
+            services.AddAutoMapper(typeof(Startup));
             services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(o => o.Address = new Uri(Configuration["GrpcSettings:DiscountUrl"]));
             services.AddScoped<DiscountGrpcService>();
 
@@ -42,7 +43,7 @@ namespace Basket.API
             {
                 config.UsingRabbitMq((ctx, cfg) =>
                 {
-                    cfg.Host("amqp://guest:guest@localhost:5672");
+                    cfg.Host("EventBusSettings:HostAddress");
                 });
             });
 
